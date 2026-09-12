@@ -2,16 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCategoryRequest;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
     /**
+     * Data dummy kategori.
+     */
+    protected array $categories = [
+        1 => ['id' => 1, 'nama' => 'Fiksi'],
+        2 => ['id' => 2, 'nama' => 'Non-Fiksi'],
+        3 => ['id' => 3, 'nama' => 'Sains'],
+    ];
+
+    /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return "CategoryController@index";
+        $categories = $this->categories;
+
+        return view('categories.index', compact('categories'));
     }
 
     /**
@@ -19,23 +31,18 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        return "CategoryController@create";
+        return view('categories.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreCategoryRequest $request)
     {
-        return "CategoryController@store";
-    }
+        $validated = $request->validated();
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        return "CategoryController@show, id: {$id}";
+        return redirect()->route('categories.index')
+            ->with('success', "Kategori '{$validated['nama']}' berhasil ditambahkan (dummy, belum ke database).");
     }
 
     /**
@@ -43,15 +50,24 @@ class CategoryController extends Controller
      */
     public function edit(string $id)
     {
-        return "CategoryController@edit, id: {$id}";
+        $category = $this->categories[$id] ?? null;
+
+        if (! $category) {
+            abort(404, 'Kategori tidak ditemukan.');
+        }
+
+        return view('categories.edit', compact('category'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(StoreCategoryRequest $request, string $id)
     {
-        return "CategoryController@update, id: {$id}";
+        $validated = $request->validated();
+
+        return redirect()->route('categories.index')
+            ->with('success', "Kategori id {$id} berhasil diperbarui (dummy, belum ke database).");
     }
 
     /**
@@ -59,6 +75,7 @@ class CategoryController extends Controller
      */
     public function destroy(string $id)
     {
-        return "CategoryController@destroy, id: {$id}";
+        return redirect()->route('categories.index')
+            ->with('success', "Kategori id {$id} berhasil dihapus (dummy, belum ke database).");
     }
 }
